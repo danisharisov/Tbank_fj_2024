@@ -1,0 +1,10 @@
+# Игнорируем каталоги
+/.idea/
+/node_modules/
+/target/
+/out/
+
+# Игнорируем файлы
+*.log
+*.tmp
+*.swp
