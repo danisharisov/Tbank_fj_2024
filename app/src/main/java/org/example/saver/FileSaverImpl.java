@@ -10,11 +10,12 @@ public class FileSaverImpl implements FileSaver {
 
     @Override
     public void save(String data, String filePath) {
+        logger.info("Начинается сохранение данных в файл: {}", filePath);
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(data);
-            logger.info("Данные успешно сохранены в " + filePath);
+            logger.debug("Данные успешно сохранены в файл: {}", filePath);
         } catch (IOException e) {
-            logger.error("Ошибка записи данных в файл: " + e.getMessage());
+            logger.error("Ошибка записи данных в файл: {}", filePath, e);
         }
     }
 }

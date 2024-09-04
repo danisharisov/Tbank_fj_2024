@@ -24,13 +24,15 @@ public class Main {
     }
 
     private static void processFile(CityParser parser, CityXmlConverter converter, FileSaver fileSaver, String inputFilePath, String outputFilePath) {
+        logger.debug("Начинается обработка файла: {}", inputFilePath);
+
         City city = parser.parse(inputFilePath);
         if (city != null) {
             String xml = converter.toXml(city);
             fileSaver.save(xml, outputFilePath);
-            logger.info("Обработка файла " + inputFilePath + " завершена успешно");
+            logger.info("Обработка файла {} завершена успешно, XML сохранен в {}", inputFilePath, outputFilePath);
         } else {
-            logger.warn("Не удалось обработать файл " + inputFilePath);
+            logger.warn("Не удалось обработать файл {}", inputFilePath);
         }
     }
 }

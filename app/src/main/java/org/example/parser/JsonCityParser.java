@@ -15,10 +15,12 @@ public class JsonCityParser implements CityParser {
     public City parse(String filePath) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            logger.info("Начинается парсинг JSON из файла: " + filePath);
-            return objectMapper.readValue(new File(filePath), City.class);
+            logger.info("Начинается парсинг JSON из файла: {}", filePath);
+            City city = objectMapper.readValue(new File(filePath), City.class);
+            logger.debug("Парсинг завершен успешно, объект City создан: {}", city);
+            return city;
         } catch (IOException e) {
-            logger.error("Ошибка при чтении или парсинге JSON-файла: " + e.getMessage());
+            logger.error("Ошибка при чтении или парсинге JSON-файла", e);
             return null;
         }
     }
