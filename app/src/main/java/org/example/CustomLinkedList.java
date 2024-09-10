@@ -30,10 +30,6 @@ public class CustomLinkedList<T> {
     }
 
     public void remove(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-        }
-
         Node<T> nodeToRemove = getNode(index);
         if (nodeToRemove == head) {
             head = head.next;
