@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +29,8 @@ public class TimedPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
-        Class<?> beanClass = beanClasses.get(beanName);
-        if (beanClass != null) {
+        Class<?> beanClass = bean.getClass();
+        if (beanClass.isAnnotationPresent(Timed.class) || Arrays.stream(beanClass.getMethods()).anyMatch(method -> method.isAnnotationPresent(Timed.class))) {
             return createProxy(bean, beanClass);
         }
         return bean;

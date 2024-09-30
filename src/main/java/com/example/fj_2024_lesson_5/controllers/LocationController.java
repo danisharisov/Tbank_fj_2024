@@ -11,7 +11,6 @@ import java.util.List;
 @RequestMapping("/api/v1/locations")
 public class LocationController {
     private final LocationService locationService;
-
     @Autowired
     public LocationController(LocationService locationService) {
         this.locationService = locationService;
@@ -26,19 +25,19 @@ public class LocationController {
     @GetMapping("/{slug}")
     public ResponseEntity<Location> getLocationBySlug(@PathVariable String slug) {
         Location location = locationService.getLocationBySlug(slug);
-        return location != null ? ResponseEntity.ok(location) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(location);
     }
 
     @PostMapping
     public ResponseEntity<Location> createLocation(@RequestBody Location location) {
         locationService.createLocation(location);
-        return ResponseEntity.ok(location);
+        return ResponseEntity.status(201).build();
     }
 
     @PutMapping("/{slug}")
     public ResponseEntity<Location> updateLocation(@PathVariable String slug, @RequestBody Location updatedLocation) {
         locationService.updateLocation(slug, updatedLocation);
-        return ResponseEntity.ok(updatedLocation);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{slug}")
