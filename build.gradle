@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.1.4'
     id 'io.spring.dependency-management' version '1.1.6'
 }
@@ -12,6 +13,27 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn test
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
+    }
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: ['**/dto/**'])
+            })
+    )
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
 
 repositories {
     mavenCentral()
@@ -21,12 +43,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
     implementation 'ch.qos.logback:logback-classic:1.4.8'
     implementation 'org.aspectj:aspectjweaver:1.9.19'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
+    testImplementation 'org.testcontainers:testcontainers:1.19.0'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.0'
+    testImplementation 'org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.0'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.springframework:spring-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

@@ -2,6 +2,7 @@ package com.example.fj_2024_lesson_5.services;
 
 import com.example.fj_2024_lesson_5.dto.Category;
 import com.example.fj_2024_lesson_5.exceptions.CategoryNotFoundException;
+import com.example.fj_2024_lesson_5.exceptions.EntityAlreadyExistsException;
 import com.example.fj_2024_lesson_5.storage.CategoryStorage;
 import com.example.fj_2024_lesson_5.timed.Timed;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,9 @@ public class CategoryService {
     }
 
     public void createCategory(Category category) {
+        if (categoryStorage.findById(category.getId()) != null) {
+            throw new EntityAlreadyExistsException("Category with ID " + category.getId() + " already exists.");
+        }
         categoryStorage.save(category.getId(), category);
     }
 
