@@ -58,6 +58,18 @@ class CategoryStorageTest {
     }
 
     @Test
+    void testUpdateCategory() {
+        Category category = new Category(1, "slug1", "Category1");
+        categoryStorage.save(1, category);
+
+        Category updatedCategory = new Category(1, "slug1", "Updated Category");
+        categoryStorage.update(1, updatedCategory);
+
+        assertEquals(updatedCategory, categoryStorage.findById(1));
+        assertEquals("Updated Category", categoryStorage.findById(1).getName());
+    }
+
+    @Test
     void testDeleteCategory() {
         Category category = new Category(1, "slug1", "Category1");
         categoryStorage.save(1, category);

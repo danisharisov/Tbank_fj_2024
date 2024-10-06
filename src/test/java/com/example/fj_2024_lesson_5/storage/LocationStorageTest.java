@@ -55,6 +55,18 @@ class LocationStorageTest {
     }
 
     @Test
+    void testUpdateLocation() {
+        Location location = new Location("ekb", "Ekaterinburg");
+        locationStorage.save("ekb", location);
+
+        Location updatedLocation = new Location("ekb", "Updated Ekaterinburg");
+        locationStorage.update("ekb", updatedLocation);
+
+        assertEquals(updatedLocation, locationStorage.findById("ekb"));
+        assertEquals("Updated Ekaterinburg", locationStorage.findById("ekb").getName());
+    }
+
+    @Test
     void testDeleteLocation() {
         Location location = new Location("ekb", "Ekaterinburg");
         locationStorage.save("ekb", location);

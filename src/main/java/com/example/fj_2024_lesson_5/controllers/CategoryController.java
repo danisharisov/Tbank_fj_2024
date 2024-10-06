@@ -1,6 +1,7 @@
 package com.example.fj_2024_lesson_5.controllers;
 
 import com.example.fj_2024_lesson_5.dto.Category;
+import com.example.fj_2024_lesson_5.exceptions.CategoryNotFoundException;
 import com.example.fj_2024_lesson_5.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,16 +12,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/places/categories")
 public class CategoryController {
+
     private final CategoryService categoryService;
-    @Autowired
+
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+    public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("/{id}")
@@ -32,7 +33,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<Void> createCategory(@RequestBody Category category) {
         categoryService.createCategory(category);
-        return ResponseEntity.status(201).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")
@@ -46,5 +47,15 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @RestControllerAdvice
+    public class CustomExceptionHandler {
+
+        @ExceptionHandler(CategoryNotFoundException.class)
+        @ResponseStatus(HttpStatus.NOT_FOUND)
+        public ResponseEntity<String> handleCategoryNotFound(CategoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
