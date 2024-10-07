@@ -13,3 +13,5 @@ plugins {
 
 rootProject.name = 'Tbank_fj_2024'
 include('app')
+include 'currency_rates'
+
