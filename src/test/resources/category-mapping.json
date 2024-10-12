@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v1/places/categories"
+  },
+  "response": {
+    "status": 200,
+    "body": "[{\"id\":1,\"name\":\"Category 1\",\"slug\":\"category-1\"},{\"id\":2,\"name\":\"Category 2\",\"slug\":\"category-2\"}]",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

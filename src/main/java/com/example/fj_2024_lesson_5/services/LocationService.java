@@ -1,6 +1,7 @@
 package com.example.fj_2024_lesson_5.services;
 
 import com.example.fj_2024_lesson_5.dto.Location;
+import com.example.fj_2024_lesson_5.exceptions.EntityAlreadyExistsException;
 import com.example.fj_2024_lesson_5.exceptions.LocationNotFoundException;
 import com.example.fj_2024_lesson_5.storage.LocationStorage;
 import com.example.fj_2024_lesson_5.timed.Timed;
@@ -38,6 +39,9 @@ public class LocationService {
     }
 
     public void createLocation(Location location) {
+        if (locationStorage.findById(location.getSlug()) != null) {
+            throw new EntityAlreadyExistsException("Location with slug " + location.getSlug() + " already exists.");
+        }
         locationStorage.save(location.getSlug(), location);
     }
     public void updateLocation(String slug, Location updatedLocation) {
