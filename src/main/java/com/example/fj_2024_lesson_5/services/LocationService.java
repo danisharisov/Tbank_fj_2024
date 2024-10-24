@@ -1,63 +1,50 @@
 package com.example.fj_2024_lesson_5.services;
 
-import com.example.fj_2024_lesson_5.dto.Location;
+import com.example.fj_2024_lesson_5.entity.Location;
 import com.example.fj_2024_lesson_5.exceptions.LocationNotFoundException;
-import com.example.fj_2024_lesson_5.storage.LocationStorage;
+import com.example.fj_2024_lesson_5.repository.LocationRepository;
 import com.example.fj_2024_lesson_5.timed.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LocationService {
-    @Value("${kudago.location.api.url}")
-    private String locationUrl;
-    private final RestTemplate restTemplate;
-    private final LocationStorage locationStorage;
-    @Timed
-    public void fetchLocationsFromKudaGo() {
-        Location[] locations = restTemplate.getForObject(locationUrl, Location[].class);
-        if (locations != null) {
-            saveAll(List.of(locations));
-        }
-    }
+    private final LocationRepository locationRepository;
 
+    @Transactional(readOnly = true)
     public List<Location> getAllLocations() {
-        return List.copyOf(locationStorage.findAll());
+        return locationRepository.findAll();
     }
 
-    public Location getLocationBySlug(String slug) {
-        Location location = locationStorage.findById(slug);
-        if (location == null) {
-            throw new LocationNotFoundException("Location with slug " + slug + " not found");
-        }
-        return location;
+    @Transactional(readOnly = true)
+    public Location getLocationById(UUID id) {
+        return locationRepository.findById(id).orElseThrow(() ->
+                new LocationNotFoundException("Location not found with ID: " + id));
+    }
+    public Location createLocation(Location location) {
+        return locationRepository.save(location);
+    }
+    public Location updateLocation(UUID id, Location locationDetails) {
+        Location location = locationRepository.findById(id).orElseThrow(() ->
+                new LocationNotFoundException("Location not found with ID: " + id));
+
+        location.setName(locationDetails.getName());
+        return locationRepository.save(location);
     }
 
-    public void createLocation(Location location) {
-        locationStorage.save(location.getSlug(), location);
-    }
-    public void updateLocation(String slug, Location updatedLocation) {
-        Location existingLocation = locationStorage.findById(slug);
-        if (existingLocation == null) {
-            throw new LocationNotFoundException("Location with slug " + slug + " not found");
-        }
-        updatedLocation.setSlug(slug);
-        locationStorage.update(slug, updatedLocation);
+    public void deleteLocation(UUID id) {
+        Location location = locationRepository.findById(id).orElseThrow(() ->
+                new LocationNotFoundException("Location not found with ID: " + id));
+        locationRepository.delete(location);
     }
 
-    public void deleteLocation(String slug) {
-        if (locationStorage.findById(slug) == null) {
-            throw new LocationNotFoundException("Location with slug " + slug + " not found");
-        }
-        locationStorage.delete(slug);
-    }
-
-    public void saveAll(List<Location> locations) {
-        locations.forEach(location -> locationStorage.save(location.getSlug(), location));
-    }
 
 }
