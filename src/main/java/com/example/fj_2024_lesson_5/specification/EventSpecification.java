@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 public class EventSpecification {
