@@ -20,11 +20,6 @@ public class LocationService {
     private final LocationRepository locationRepository;
 
     @Transactional(readOnly = true)
-    public List<Location> getAllLocations() {
-        return locationRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
     public Location getLocationById(UUID id) {
         return locationRepository.findById(id).orElseThrow(() ->
                 new LocationNotFoundException("Location not found with ID: " + id));
@@ -45,6 +40,9 @@ public class LocationService {
                 new LocationNotFoundException("Location not found with ID: " + id));
         locationRepository.delete(location);
     }
-
+    @Transactional(readOnly = true)
+    public List<Location> getAllLocations() {
+        return locationRepository.findAll();
+    }
 
 }

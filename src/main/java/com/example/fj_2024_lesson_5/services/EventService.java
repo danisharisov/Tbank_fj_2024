@@ -68,4 +68,10 @@ public class EventService {
                         toDate != null ? LocalDate.parse(toDate) : null));
         return eventRepository.findAll(spec);
     }
+
+    @Transactional(readOnly = true)
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
+
 }

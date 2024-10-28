@@ -25,6 +25,12 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Event>> getAllEvents() {
+        List<Event> events = eventService.getAllEvents();
+        return ResponseEntity.ok(events);
+    }
+
     @PostMapping
     public ResponseEntity<Event> createEvent(@Valid @RequestBody Event event) {
         Event savedEvent = eventService.createEvent(event);

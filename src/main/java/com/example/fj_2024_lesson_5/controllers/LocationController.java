@@ -18,12 +18,6 @@ public class LocationController {
         this.locationService = locationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Location>> getAllLocations() {
-        List<Location> locations = locationService.getAllLocations();
-        return ResponseEntity.ok(locations);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Location> getLocationById(@PathVariable UUID id) {
         Location location = locationService.getLocationById(id);
@@ -48,5 +42,10 @@ public class LocationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<List<Location>> getAllLocations() {
+        List<Location> locations = locationService.getAllLocations();
+        return ResponseEntity.ok(locations);
+    }
 
 }
