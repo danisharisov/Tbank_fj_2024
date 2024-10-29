@@ -1,5 +1,10 @@
 package com.example.fj_2024_lesson_5.init;
 
+import com.example.fj_2024_lesson_5.command.Command;
+import com.example.fj_2024_lesson_5.command.InitializeCategoriesCommand;
+import com.example.fj_2024_lesson_5.command.InitializeLocationsCommand;
+import com.example.fj_2024_lesson_5.observer.CategoryDataObserver;
+import com.example.fj_2024_lesson_5.observer.LocationDataObserver;
 import com.example.fj_2024_lesson_5.services.CategoryService;
 import com.example.fj_2024_lesson_5.services.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +15,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -23,6 +28,8 @@ public class DataInitializer {
 
     private final CategoryService categoryService;
     private final LocationService locationService;
+    private final CategoryDataObserver categoryDataObserver;
+    private final LocationDataObserver locationDataObserver;
     private final ExecutorService fixedThreadPool;
     private final ScheduledExecutorService scheduledThreadPool;
 
@@ -35,29 +42,13 @@ public class DataInitializer {
     private void initializeData() {
         long startTime = System.nanoTime();
 
-        List<Future<?>> futures = new ArrayList<>();
+        Command initializeCategories = new InitializeCategoriesCommand(categoryService, Arrays.asList(categoryDataObserver));
+        Command initializeLocations = new InitializeLocationsCommand(locationService, Arrays.asList(locationDataObserver));
 
-        Future<?> categoriesFuture = fixedThreadPool.submit(() -> {
-            try {
-                logger.info("Fetching categories from KudaGo API...");
-                categoryService.fetchCategoriesFromKudaGo();
-                logger.info("Categories initialized successfully.");
-            } catch (Exception e) {
-                logger.error("Failed to initialize categories: {}", e.getMessage());
-            }
-        });
-        futures.add(categoriesFuture);
-/*
-        Future<?> locationsFuture = fixedThreadPool.submit(() -> {
-            try {
-                logger.info("Fetching locations from KudaGo API...");
-                locationService.fetchLocationsFromKudaGo();
-                logger.info("Locations initialized successfully.");
-            } catch (Exception e) {
-                logger.error("Failed to initialize locations: {}", e.getMessage());
-            }
-        });
-        futures.add(locationsFuture);
+        List<Future<?>> futures = Arrays.asList(
+                fixedThreadPool.submit(initializeCategories::execute),
+                fixedThreadPool.submit(initializeLocations::execute)
+        );
 
         for (Future<?> future : futures) {
             try {
@@ -70,8 +61,5 @@ public class DataInitializer {
         long endTime = System.nanoTime();
         long duration = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
         logger.info("Initialization took {} ms", duration);
-    }
-
- */
     }
 }
