@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.List;
 
-public class CustomLinkedList<T> {
+public class CustomLinkedList<T> implements Iterable<T> {
     private Node<T> head;
     private Node<T> tail;
     private int size;
@@ -69,6 +69,10 @@ public class CustomLinkedList<T> {
 
     public int getSize() {
         return size;
+    }
+
+    public CustomIterator<T> iterator() {
+        return new CustomIteratorImpl<>(head);
     }
 
     private Node<T> getNode(int index) {
