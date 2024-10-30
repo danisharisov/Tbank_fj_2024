@@ -47,7 +47,7 @@ public class DataInitializer {
             }
         });
         futures.add(categoriesFuture);
-
+/*
         Future<?> locationsFuture = fixedThreadPool.submit(() -> {
             try {
                 logger.info("Fetching locations from KudaGo API...");
@@ -70,5 +70,8 @@ public class DataInitializer {
         long endTime = System.nanoTime();
         long duration = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
         logger.info("Initialization took {} ms", duration);
+    }
+
+ */
     }
 }
