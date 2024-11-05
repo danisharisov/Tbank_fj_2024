@@ -10,4 +10,8 @@ import java.util.List;
 public interface LocationHistoryRepository {
     void save(String locationSlug, LocationMemento memento);
     List<LocationMemento> findByLocationSlug(String slug);
+    LocationMemento getLastSnapshot(String locationSlug);
+    public void deleteLastSnapshot(String locationSlug);
+    public void deleteHistory(String locationSlug);
+
 }

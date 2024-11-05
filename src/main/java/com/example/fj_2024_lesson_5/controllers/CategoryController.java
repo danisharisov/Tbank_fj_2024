@@ -35,8 +35,8 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestParam String name) {
-        Category updatedCategory = categoryService.updateCategory(id, name);
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestParam String name, @RequestParam String slug) {
+        Category updatedCategory = categoryService.updateCategory(id, name,slug);
         return ResponseEntity.ok(updatedCategory);
     }
 
@@ -45,4 +45,11 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreCategory(@PathVariable Long id) {
+        categoryService.restoreCategory(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

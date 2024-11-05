@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class LocationMemento implements Serializable {
+public class LocationMemento implements  Memento, Serializable {
 
     private UUID slug;
     private String name;
@@ -20,4 +20,10 @@ public class LocationMemento implements Serializable {
         this.name = name;
         timestamp = LocalDateTime.now();
     }
+
+    @Override
+    public LocalDateTime getSnapshotDate() {
+        return timestamp;
+    }
+
 }

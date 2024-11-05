@@ -3,15 +3,13 @@ package com.example.fj_2024_lesson_5.services;
 import com.example.fj_2024_lesson_5.client.KudaGoClient;
 import com.example.fj_2024_lesson_5.entity.Category;
 import com.example.fj_2024_lesson_5.exceptions.CategoryNotFoundException;
-import com.example.fj_2024_lesson_5.memento.CategoryMemento;
 import com.example.fj_2024_lesson_5.repository.CategoryRepository;
-import com.example.fj_2024_lesson_5.repository.history.CategoryHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -20,11 +18,11 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final KudaGoClient kudaGoClient;
-    private final CategoryHistoryRepository categoryHistoryRepository;
+    private final CategoryHistoryService categoryHistoryService;
 
     public Category createCategory(String name) {
         Category category = new Category(name);
-        saveCategoryMemento(category);
+        categoryHistoryService.saveSnapshot(category);
         return categoryRepository.save(category);
     }
 
@@ -39,19 +37,22 @@ public class CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
     }
 
-    public Category updateCategory(Long id, String newName) {
+    public Category updateCategory(Long id, String newName, String newSlug) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+        categoryHistoryService.saveSnapshot(category);
         category.setName(newName);
-        saveCategoryMemento(category);
+        category.setSlug(newSlug);
         return categoryRepository.save(category);
     }
 
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
-        saveCategoryMemento(category);
-        categoryRepository.delete(category);
+        categoryHistoryService.saveSnapshot(category);
+        category.setName(null);
+        category.setSlug(null);
+        categoryRepository.save(category);
     }
 
     public List<Category> fetchCategoriesFromKudaGo() {
@@ -60,8 +61,10 @@ public class CategoryService {
         return categories;
     }
 
-    private void saveCategoryMemento(Category category) {
-        CategoryMemento memento = new CategoryMemento(category.getId(), category.getName(),category.getSlug());
-        categoryHistoryRepository.save(category.getId(), memento);
+    public void restoreCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + categoryId));
+        categoryHistoryService.restoreCategory(category);
+        categoryRepository.save(category);
     }
 }

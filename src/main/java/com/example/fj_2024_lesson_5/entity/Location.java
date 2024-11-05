@@ -1,5 +1,7 @@
 package com.example.fj_2024_lesson_5.entity;
 
+import com.example.fj_2024_lesson_5.memento.LocationMemento;
+import com.example.fj_2024_lesson_5.memento.Memento;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,5 +41,21 @@ public class Location {
         events.remove(event);
         event.setLocation(null);
     }
+
+    public LocationMemento makeSnapshot() {
+        return new LocationMemento(id, name);
+    }
+
+
+    public void restore(Memento memento) {
+        if (memento instanceof LocationMemento) {
+            LocationMemento locationMemento = (LocationMemento) memento;
+            this.id = locationMemento.getSlug();
+            this.name = locationMemento.getName();
+        } else {
+            throw new IllegalArgumentException("Invalid memento type");
+        }
+    }
+
 }
 

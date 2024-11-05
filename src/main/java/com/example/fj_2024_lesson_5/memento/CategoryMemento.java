@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CategoryMemento implements Serializable {
+public class CategoryMemento implements Memento, Serializable {
 
     private Long id;
     private String name;
@@ -23,4 +23,11 @@ public class CategoryMemento implements Serializable {
         this.slug = slug;
         timestamp = LocalDateTime.now();
     }
+
+    @Override
+    public LocalDateTime getSnapshotDate() {
+        return timestamp;
+    }
+
+
 }

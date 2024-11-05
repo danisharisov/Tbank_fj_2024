@@ -1,38 +1,39 @@
 package com.example.fj_2024_lesson_5.storage;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HistoryStorage<ID, T> {
 
-    private final Map<ID, T> storage = new ConcurrentHashMap<>();
+    private final Map<ID, List<T>> storage = new ConcurrentHashMap<>();
 
-    public void save(ID key, T value) {
-        storage.put(key, value);
+    public void saveSnapshot(ID key, T value) {
+        storage.putIfAbsent(key, new ArrayList<>());
+        storage.get(key).add(value);
     }
 
-    public T get(ID key) {
-        return storage.get(key);
+    public List<T> getSnapshots(ID key) {
+        return storage.getOrDefault(key, new ArrayList<>());
     }
 
-    public Collection<T> findAll() {
-        return storage.values();
+    public T getLastSnapshot(ID key) {
+        List<T> history = storage.get(key);
+        if (history != null && !history.isEmpty()) {
+            return history.get(history.size() - 1);
+        }
+        return null;
     }
 
-    public void update(ID key, T value) {
-        storage.put(key, value);
-    }
-
-    public void delete(ID key) {
+    public void deleteHistory(ID key) {
         storage.remove(key);
     }
 
-    public T putIfAbsent(ID key, T value) {
-        return storage.putIfAbsent(key, value);
-    }
-
-    public T getOrDefault(ID key, T defaultValue) {
-        return storage.getOrDefault(key, defaultValue);
+    public void deleteLastSnapshot(ID key) {
+        List<T> history = storage.get(key);
+        if (history != null && !history.isEmpty()) {
+            history.remove(history.size() - 1);
+        }
     }
 }

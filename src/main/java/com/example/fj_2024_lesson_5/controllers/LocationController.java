@@ -48,4 +48,10 @@ public class LocationController {
         return ResponseEntity.ok(locations);
     }
 
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreLocation(@PathVariable UUID id) {
+        locationService.restoreLocation(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

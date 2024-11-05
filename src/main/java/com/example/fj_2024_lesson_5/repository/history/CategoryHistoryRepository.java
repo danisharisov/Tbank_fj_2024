@@ -9,4 +9,7 @@ import java.util.List;
 public interface CategoryHistoryRepository {
     void save(Long categoryId, CategoryMemento memento);
     List<CategoryMemento> findByCategoryId(Long categoryId);
+    CategoryMemento getLastSnapshot(Long categoryId);
+    void deleteLastSnapshot(Long categoryId);
+    void deleteHistory(Long categoryId);
 }
