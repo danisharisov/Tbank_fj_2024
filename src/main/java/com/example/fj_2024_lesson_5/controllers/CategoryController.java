@@ -1,9 +1,7 @@
 package com.example.fj_2024_lesson_5.controllers;
 
-import com.example.fj_2024_lesson_5.dto.Category;
+import com.example.fj_2024_lesson_5.entity.Category;
 import com.example.fj_2024_lesson_5.services.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,10 +9,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/places/categories")
 public class CategoryController {
+
     private final CategoryService categoryService;
-    @Autowired
+
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Category> createCategory(@RequestParam String name) {
+        Category category = categoryService.createCategory(name);
+        return ResponseEntity.status(201).body(category);
     }
 
     @GetMapping
@@ -24,27 +29,27 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
         Category category = categoryService.getCategoryById(id);
         return ResponseEntity.ok(category);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> createCategory(@RequestBody Category category) {
-        categoryService.createCategory(category);
-        return ResponseEntity.status(201).build();
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateCategory(@PathVariable int id, @RequestBody Category category) {
-        category.setId(id);
-        categoryService.updateCategory(category);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestParam String name, @RequestParam String slug) {
+        Category updatedCategory = categoryService.updateCategory(id, name,slug);
+        return ResponseEntity.ok(updatedCategory);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable int id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreCategory(@PathVariable Long id) {
+        categoryService.restoreCategory(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

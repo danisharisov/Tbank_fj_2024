@@ -1,61 +1,70 @@
 package com.example.fj_2024_lesson_5.services;
 
-import com.example.fj_2024_lesson_5.dto.Category;
+import com.example.fj_2024_lesson_5.client.KudaGoClient;
+import com.example.fj_2024_lesson_5.entity.Category;
 import com.example.fj_2024_lesson_5.exceptions.CategoryNotFoundException;
-import com.example.fj_2024_lesson_5.storage.CategoryStorage;
-import com.example.fj_2024_lesson_5.timed.Timed;
+import com.example.fj_2024_lesson_5.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-@Timed
+
+
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CategoryService {
-    @Value("${kudago.category.api.url}")
-    private String categoryUrl;
-    private final CategoryStorage categoryStorage;
-    private final RestTemplate restTemplate;
 
-    public void fetchCategoriesFromKudaGo() {
-        Category[] categories = restTemplate.getForObject(categoryUrl, Category[].class);
-        if (categories != null) {
-            saveAll(List.of(categories));
-        }
+    private final CategoryRepository categoryRepository;
+    private final KudaGoClient kudaGoClient;
+    private final CategoryHistoryService categoryHistoryService;
+
+    public Category createCategory(String name) {
+        Category category = new Category(name);
+        categoryHistoryService.saveSnapshot(category);
+        return categoryRepository.save(category);
     }
 
+    @Transactional(readOnly = true)
     public List<Category> getAllCategories() {
-        return List.copyOf(categoryStorage.findAll());
+        return categoryRepository.findAll();
     }
 
-    public Category getCategoryById(int id) {
-        Category category = categoryStorage.findById(id);
-        if (category == null) {
-            throw new CategoryNotFoundException("Category with ID " + id + " not found");
-        }
-        return category;
+    @Transactional(readOnly = true)
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
     }
 
-    public void createCategory(Category category) {
-        categoryStorage.save(category.getId(), category);
+    public Category updateCategory(Long id, String newName, String newSlug) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+        categoryHistoryService.saveSnapshot(category);
+        category.setName(newName);
+        category.setSlug(newSlug);
+        return categoryRepository.save(category);
     }
 
-    public void updateCategory(Category category) {
-        if (categoryStorage.findById(category.getId()) == null) {
-            throw new CategoryNotFoundException("Category with ID " + category.getId() + " not found");
-        }
-        categoryStorage.update(category.getId(), category);
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+        categoryHistoryService.saveSnapshot(category);
+        category.setName(null);
+        category.setSlug(null);
+        categoryRepository.save(category);
     }
 
-    public void saveAll(List<Category> categories) {
-        categories.forEach(category -> categoryStorage.save(category.getId(), category));
+    public List<Category> fetchCategoriesFromKudaGo() {
+        List<Category> categories = kudaGoClient.getAllCategories();
+        categoryRepository.saveAll(categories);
+        return categories;
     }
 
-    public void deleteCategory(int id) {
-        if (categoryStorage.findById(id) == null) {
-            throw new CategoryNotFoundException("Category with ID " + id + " not found");
-        }
-        categoryStorage.delete(id);
+    public void restoreCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + categoryId));
+        categoryHistoryService.restoreCategory(category);
+        categoryRepository.save(category);
     }
 }
