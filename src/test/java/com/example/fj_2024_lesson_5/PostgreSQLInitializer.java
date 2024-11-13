@@ -14,7 +14,7 @@ public class PostgreSQLInitializer implements ApplicationContextInitializer<Conf
     private static final Logger logger = LoggerFactory.getLogger(PostgreSQLInitializer.class);
 
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:14-alpine"))
-            .withDatabaseName("test_db")
+            .withDatabaseName("test")
             .withUsername("test")
             .withPassword("test");
 
