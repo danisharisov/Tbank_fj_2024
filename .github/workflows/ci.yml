@@ -21,11 +21,7 @@ permissions:
 
 jobs:
   build:
-    permissions:
-      packages: write
-      pull-requests: write
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:13
@@ -63,6 +59,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Build with Gradle
         run: ./gradlew clean build --refresh-dependencies
 
@@ -88,6 +85,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Run tests
         run: ./gradlew test
 
@@ -108,9 +106,7 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew jacocoTestReport
-      - name: Check if Jacoco report exists
-        run: |
-          ls -R build/reports/jacoco
+
       - name: Upload Jacoco Coverage Report
         uses: madrapps/jacoco-report@v1.7.1
         with:
@@ -143,13 +139,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Run static code analysis
         run: ./gradlew check
 
   docker:
-    permissions:
-      packages: write
-      pull-requests: write
     runs-on: ubuntu-latest
     needs: static_analysis
     steps:
@@ -165,12 +159,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew clean build --refresh-dependencies
-
       - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/danisharisov/fintech:latest .
+        run: docker build -t ghcr.io/danisharisov/fintech:latest .
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
