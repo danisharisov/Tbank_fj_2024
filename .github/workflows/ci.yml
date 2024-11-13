@@ -168,6 +168,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Build with Gradle
+        run: ./gradlew clean build --refresh-dependencies
+
       - name: Build Docker image
         run: docker build -t ghcr.io/danisharisov/fintech:latest .
 
