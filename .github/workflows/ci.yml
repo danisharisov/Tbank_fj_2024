@@ -102,7 +102,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run tests
-        run: chmod +x ./gradlew test
+        run: ./gradlew test
 
   coverage_report:
     runs-on: ubuntu-latest
