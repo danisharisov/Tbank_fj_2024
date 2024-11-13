@@ -164,3 +164,4 @@ jobs:
 
       - name: Push Docker image to GitHub Container Registry
         run: docker push ghcr.io/danisharisov/fintech:latest
+
