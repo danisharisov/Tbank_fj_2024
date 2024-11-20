@@ -1,17 +1,12 @@
 package com.example.fj_2024_lesson_5.controllers;
 
 import com.example.fj_2024_lesson_5.entity.Event;
-import com.example.fj_2024_lesson_5.exceptions.EventNotFoundException;
-import com.example.fj_2024_lesson_5.repository.EventRepository;
-import com.example.fj_2024_lesson_5.repository.LocationRepository;
 import com.example.fj_2024_lesson_5.services.EventService;
-import com.example.fj_2024_lesson_5.specification.EventSpecification;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
+
 import java.util.UUID;
 import java.util.List;
 
